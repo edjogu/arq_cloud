@@ -12,6 +12,8 @@
 
 # Define Variables
 #
+# if latitude >= -3.002  and latitude <= -4.227: # Validar que este dentro del rango
+# if longitud >= -69.714  and longitud <= -70.365: # Validar que este dentro del rango
 
 import time
 import os
@@ -21,6 +23,7 @@ msgBienvenido = "Bienvenido al sistema de ubicación para zonas públicas WIFI"
 msgError = "Error"
 msgOk = "Sesión iniciada"
 msg_error_coordinate = "Error coordenada"
+msg_error_update = "Error actualización"
 name = "52208"
 stored_passw = "80225"
 calDigito = ((8 // 2) + 8)  - (2 ** 2 + (5 * 2) - 2)
@@ -35,6 +38,16 @@ iMenu07 = "Cerrar sesión";
 # Definir lista 
 optMenuList = [iMenu01, iMenu02, iMenu03, iMenu04, iMenu05, iMenu06, iMenu07];
 countErrors = 0
+# Definir lista vacía para las coordenadas
+coordinates = []
+# tmp_coordinates = [[None, None], 
+#                 [None, None], 
+#                 [None, None]]
+
+tmp_coordinates=[[10.103,-74.902],
+                 [10.115,-75.085],
+                 [10.108,-74.801]]
+
 #endregion Variables Globales
 
 #region Funciones
@@ -73,9 +86,62 @@ def ErrorMessage(msg):
     os.system("cls")
     print(msg)
     time.sleep(2)
-#endregion Funciones
 
-# RF01:
+def addcoordinates(list_coordinates):
+    lista = list(list_coordinates)
+    for i in range (0, 3):
+        lista.append([])
+        latitude = input("Ingrese la latitud: ") # Ingresar latitud
+        if latitude == "" or latitude == " ": # validar que ingrese un valor de latitud válido
+            ErrorMessage(msgError) # Muestra error y sale del programa
+            lista = []
+            #return lista
+            exit()
+        else:
+            latitude = float(latitude) # Cast a float para validar rango de latitud
+            if latitude >= 1 and latitude <= 10: # Validar que este dentro del rango
+                longitud = input("Ingrese la longitud: ") # Ingresar longuitud
+                if longitud == "" or longitud == " ": # validar que ingrese un valor de longuitud válido
+                    ErrorMessage(msgError) # Muestra error y sale del programa
+                    lista = []
+                    #return lista
+                    exit()
+                else:
+                    longitud = float(longitud) # Cast a float para validar rango de longuitud
+                    if longitud >= 1  and longitud <= 10: # Validar que este dentro del rango
+                        lista[i].insert(0, latitude)
+                        lista[i].insert(1, longitud)
+                        print(lista)                       
+                    else:
+                        ErrorMessage(msg_error_coordinate)
+                        lista = []
+                        #return lista
+                        exit()
+            else:
+                ErrorMessage(msg_error_coordinate)
+                lista = []
+                #return lista
+                exit()
+    return lista  
+
+def printcoordinates(list_coordinates):
+    lista = list(list_coordinates)
+    print(f"Las coordenadas guardadas actualmente son: ")
+    for i in range(0, len(lista)):
+        print(f"coordenada [latitud,longitud] {i + 1} : {[lista[i][0]]} {[lista[i][1]]}")
+        
+
+def updatecoordinates(coordinates):
+    input("segunda")
+    pass
+
+printcoordinates(tmp_coordinates)
+
+
+
+
+#endregion Funciones
+"""
 print(msgBienvenido) # Mensaje de bienvendida
 
 userName = input("Nombre de usuario: ")
@@ -88,18 +154,21 @@ if validatedata(name, userName):
             print(msgOk)
             time.sleep(2)
             while countErrors < 3:
-                # RF01
                 os.system("cls")
                 PrintMenuList() # Visualizar menu de opciones         
-                #region RF03
                 selectOpt = int(input("Elija una opción: "))
                 if selectOpt > 0 and selectOpt < 8:
                     selectOptList = optMenuList[selectOpt-1]
                     if selectOptList == iMenu01:
+                        # RF01
                         stored_passw = changepassword(stored_passw)                        
                     elif selectOptList == iMenu02:
-                        print(f"Usted ha elegido la opción {selectOpt}")
-                        exit()
+                        # RF02
+                        if coordinates == []:
+                            coordinates = addcoordinates(coordinates) 
+                            print(coordinates)   
+                        else:
+                            updatecoordinates(coordinates)
                     elif selectOptList == iMenu03:
                         print(f"Usted ha elegido la opción {selectOpt}")
                         exit()
@@ -110,7 +179,6 @@ if validatedata(name, userName):
                         print(f"Usted ha elegido la opción {selectOpt}")
                         exit()
                     elif selectOptList == iMenu06:
-                        #region RF02
                         newFavOpt = int(input("Seleccione opción favorita: "))
                         if newFavOpt == 1 or newFavOpt == 2 or newFavOpt == 3 or newFavOpt == 4 or newFavOpt == 5:
                             # Doble check for user
@@ -125,21 +193,18 @@ if validatedata(name, userName):
                                 ErrorMessage(msgError)                                
                         else:
                             ErrorMessage(msgError)
-                            exit() 
-                        #endregion RF02                      
-                    #region RF05
+                            exit()                                           
                     elif selectOptList == iMenu07:
                         ErrorMessage("Hasta pronto")
-                        exit()
-                    #endregion RF05
+                        exit()                    
                 else:
                     countErrors += 1 # Incremento el contador
                     ErrorMessage(msgError)
-                    continue
-                #endregion RF03
+                    continue                
         else:
             ErrorMessage(msgError) 
     else:
         ErrorMessage(msgError) 
 else:
     ErrorMessage(msgError)
+"""
